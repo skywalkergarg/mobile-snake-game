@@ -1017,7 +1017,7 @@
       gameOver = true;
       const attritionPercent = totalEmployees > 0 ? ((exitedEmployees / totalEmployees) * 100).toFixed(1) : 0;
       const currentTitle = getHRTitle(hrExperienceLevel);
-      const gameOverMessage = `You reached ${currentTitle} level with employee attrition at ${attritionPercent}%.<br>Game Over! ${isMobileDevice ? 'Tap to restart.' : 'Press Spacebar to restart.'}`;
+      const gameOverMessage = `You reached ${currentTitle} level with employee attrition at ${attritionPercent}%.<br>Game Over! ${isMobileDevice ? 'Tap here to restart.' : 'Press Spacebar to restart.'}`;
       
       document.getElementById('game-over-message').innerHTML = gameOverMessage;
       document.getElementById('game-over-message').style.display = 'block';
