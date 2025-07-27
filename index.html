@@ -250,6 +250,20 @@
     .touch-btn.right { grid-column: 3; grid-row: 2; }
     .touch-btn.down { grid-column: 2; grid-row: 3; }
     
+    /* Touch Direction Indicator */
+    .touch-indicator {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      border: 2px solid #fff;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+    
     /* Flash animations */
     .supernova-flash, .promotion-flash {
       position: fixed;
@@ -327,10 +341,6 @@
         height: 40px;
       }
       
-      .touch-controls {
-        display: grid;
-      }
-      
       h1 {
         font-size: 1.3rem;
         margin-top: 5px;
@@ -340,6 +350,10 @@
         font-size: 1rem;
         padding: 12px;
         bottom: 20px;
+      }
+      
+      #game-canvas {
+        cursor: pointer;
       }
     }
   </style>
@@ -467,7 +481,7 @@
               💪 Enter Supernova mode<br>
               🦸🏻‍♂️ Retain at-risk employees<br>
               ⏰ 2-minute challenge to minimize attrition<br>
-              📱 Use touch controls below
+              👆 Tap screen relative to snake head to move
             </div>
           </div>
           <div class="game-area">
@@ -481,12 +495,7 @@
               </select>
             </div>
           </div>
-          <div class="touch-controls" id="touch-controls">
-            <div class="touch-btn up" data-direction="UP">↑</div>
-            <div class="touch-btn left" data-direction="LEFT">←</div>
-            <div class="touch-btn right" data-direction="RIGHT">→</div>
-            <div class="touch-btn down" data-direction="DOWN">↓</div>
-          </div>
+
           <div class="mobile-metrics">
             <div class="mobile-metric">
               <div class="mobile-metric-value" id="hr-experience">HR Level: 0 (HR Intern)</div>
@@ -559,31 +568,84 @@
     // Setup touch controls
     function setupTouchControls() {
       if (isMobileDevice) {
-        const touchControls = document.getElementById('touch-controls');
-        if (touchControls) {
-          touchControls.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const target = e.target.closest('.touch-btn');
-            if (target && !gameOver) {
-              const newDirection = target.dataset.direction;
-              if (newDirection && newDirection !== getOppositeDirection(direction)) {
-                nextDirection = newDirection;
-              }
-            }
-          });
-          
-          touchControls.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = e.target.closest('.touch-btn');
-            if (target && !gameOver) {
-              const newDirection = target.dataset.direction;
-              if (newDirection && newDirection !== getOppositeDirection(direction)) {
-                nextDirection = newDirection;
-              }
-            }
-          });
-        }
+        // Add touch-to-move functionality to the canvas
+        canvas.addEventListener('touchstart', handleTouch);
+        canvas.addEventListener('click', handleTouch);
+        
+        // Prevent default touch behaviors on canvas
+        canvas.addEventListener('touchmove', (e) => e.preventDefault());
+        canvas.addEventListener('touchend', (e) => e.preventDefault());
       }
+    }
+    
+    function handleTouch(e) {
+      if (gameOver) return;
+      e.preventDefault();
+      
+      // Get touch/click coordinates
+      const rect = canvas.getBoundingClientRect();
+      let clientX, clientY;
+      
+      if (e.type === 'touchstart') {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      
+      // Convert to canvas coordinates
+      const canvasX = clientX - rect.left;
+      const canvasY = clientY - rect.top;
+      
+      // Get snake head position in canvas coordinates
+      const scaleFactor = canvas.width / 360;
+      const scaledBox = box * scaleFactor;
+      const headCanvasX = snake[0].x * scaledBox + scaledBox / 2;
+      const headCanvasY = snake[0].y * scaledBox + scaledBox / 2;
+      
+      // Calculate direction based on touch position relative to snake head
+      const deltaX = canvasX - headCanvasX;
+      const deltaY = canvasY - headCanvasY;
+      
+      // Determine primary direction (horizontal or vertical)
+      let newDirection;
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal movement is dominant
+        newDirection = deltaX > 0 ? 'RIGHT' : 'LEFT';
+      } else {
+        // Vertical movement is dominant
+        newDirection = deltaY > 0 ? 'DOWN' : 'UP';
+      }
+      
+      // Only change direction if it's not opposite to current direction
+      if (newDirection !== getOppositeDirection(direction)) {
+        nextDirection = newDirection;
+        
+        // Visual feedback - show touch indicator
+        showTouchIndicator(canvasX, canvasY);
+      }
+    }
+    
+    function showTouchIndicator(x, y) {
+      // Create a visual indicator at touch point
+      const indicator = document.createElement('div');
+      indicator.className = 'touch-indicator';
+      indicator.style.left = (canvas.offsetLeft + x - 10) + 'px';
+      indicator.style.top = (canvas.offsetTop + y - 10) + 'px';
+      indicator.style.opacity = '1';
+      
+      document.body.appendChild(indicator);
+      
+      // Remove indicator after animation
+      setTimeout(() => {
+        indicator.style.opacity = '0';
+        setTimeout(() => {
+          if (indicator.parentNode) {
+            indicator.parentNode.removeChild(indicator);
+          }
+        }, 200);
+      }, 100);
     }
     
     function getOppositeDirection(dir) {
