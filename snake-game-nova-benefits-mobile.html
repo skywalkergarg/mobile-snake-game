@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Snake Game - Nova Benefits (Mobile)</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0B3948 0%, #14B8A6 100%);
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    h1 {
+      margin-top: 10px;
+      font-size: 1.5rem;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    
+    .device-info {
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      color: #fff;
+      font-size: 0.8rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 400px;
+      gap: 10px;
+    }
+    
+    .mobile-game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 10px;
+    }
+    
+    .desktop-game-container {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .instructions-panel {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 15px;
+      width: 200px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+    
+    .mobile-instructions {
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px;
+      width: 90%;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      text-align: center;
+    }
+    
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    
+    #score {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    #speed-controls {
+      margin-bottom: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    #speed-controls label {
+      font-size: 1rem;
+      color: #fff;
+      font-weight: 500;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    #speed-controls select {
+      font-size: 1rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      background: #fff;
+    }
+    
+    #game-canvas {
+      background: linear-gradient(45deg, #2d3748, #4a5568);
+      border: 3px solid #0B3948;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(11, 57, 72, 0.4);
+      margin: 0 auto 16px auto;
+      touch-action: none;
+      display: block;
+    }
+    
+    .mobile-canvas {
+      width: 90vw !important;
+      height: 90vw !important;
+      max-width: 350px;
+      max-height: 350px;
+    }
+    
+    .desktop-canvas {
+      width: 360px;
+      height: 360px;
+    }
+    
+    #instructions {
+      color: #fff;
+      font-size: 0.9rem;
+      text-align: left;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      line-height: 1.4;
+      margin: 0;
+    }
+    
+    .mobile-instructions #instructions {
+      font-size: 0.8rem;
+      text-align: center;
+      line-height: 1.3;
+    }
+    
+    .metrics-panel {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 15px;
+      width: 200px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+    
+    .mobile-metrics {
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px;
+      width: 90%;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+    }
+    
+    .metric {
+      margin-bottom: 12px;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    
+    .mobile-metric {
+      color: #fff;
+      font-size: 0.7rem;
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+    }
+    
+    .metric-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .mobile-metric-value {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .attrition {
+      color: #fbbf24;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    .mobile-attrition {
+      color: #fbbf24;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    
+    /* Touch Controls */
+    .touch-controls {
+      display: none;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      gap: 10px;
+      width: 150px;
+      height: 150px;
+      margin-top: 10px;
+    }
+    
+    .touch-btn {
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    
+    .touch-btn:active {
+      background: rgba(255,255,255,0.4);
+      transform: scale(0.95);
+    }
+    
+    .touch-btn.up { grid-column: 2; grid-row: 1; }
+    .touch-btn.left { grid-column: 1; grid-row: 2; }
+    .touch-btn.right { grid-column: 3; grid-row: 2; }
+    .touch-btn.down { grid-column: 2; grid-row: 3; }
+    
+    /* Flash animations */
+    .supernova-flash, .promotion-flash {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      font-weight: bold;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    
+    .supernova-flash {
+      color: #fbbf24;
+      text-shadow: 0 0 20px #fbbf24, 0 0 40px #fbbf24;
+      animation: supernovaFlash 1s ease-out forwards;
+    }
+    
+    .promotion-flash {
+      color: #10b981;
+      text-shadow: 0 0 20px #10b981, 0 0 40px #10b981;
+      animation: promotionFlash 1s ease-out forwards;
+    }
+    
+    @keyframes supernovaFlash {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); font-size: 20px; }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); font-size: 60px; }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); font-size: 80px; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(2); font-size: 100px; }
+    }
+    
+    @keyframes promotionFlash {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); font-size: 20px; }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); font-size: 60px; }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); font-size: 80px; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(2); font-size: 100px; }
+    }
+    
+    #game-over-message {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 15px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: center;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      z-index: 1000;
+      min-width: 250px;
+      max-width: 90vw;
+    }
+    
+    .logo-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    
+    .logo {
+      height: 60px;
+      width: auto;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    
+    /* Mobile-specific adjustments */
+    @media (max-width: 768px) {
+      .logo {
+        height: 40px;
+      }
+      
+      .touch-controls {
+        display: grid;
+      }
+      
+      h1 {
+        font-size: 1.3rem;
+        margin-top: 5px;
+      }
+      
+      #game-over-message {
+        font-size: 1rem;
+        padding: 12px;
+        bottom: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <div class="logo">
+      <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.9); padding: 6px 10px; border-radius: 6px;">
+        <div style="width: 24px; height: 24px; background: #4A5568; border-radius: 3px; display: flex; align-items: center; justify-content: center; position: relative;">
+          <span style="color: white; font-size: 12px; font-weight: bold;">✓</span>
+          <div style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid #4A5568;"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; line-height: 1;">
+          <div style="font-family: 'Inter', Arial, sans-serif; font-size: 10px; font-weight: bold; color: #4A5568; margin: 0;">nova</div>
+          <div style="font-family: 'Inter', Arial, sans-serif; font-size: 10px; font-weight: bold; color: #4A5568; margin: 0;">benefits</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <h1>Snake Game - Nova Benefits</h1>
+  <div class="device-info" id="device-info">Detecting device...</div>
+  
+  <div id="game-container" class="game-container">
+    <!-- Content will be dynamically inserted based on device type -->
+  </div>
+  
+  <div id="game-over-message" style="display: none;">
+    Game Over! Press Spacebar to restart.
+  </div>
+  
+  <script>
+    // Device Detection
+    function getDeviceType() {
+      const userAgent = navigator.userAgent;
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      const isTablet = /iPad|Android(?=.*\bMobile\b)/i.test(userAgent);
+      const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const isSmallScreen = window.innerWidth <= 768;
+      
+      if (isMobile && !isTablet) return 'mobile';
+      if (isTablet) return 'tablet'; 
+      if (isTouch && isSmallScreen) return 'mobile';
+      return 'desktop';
+    }
+    
+    const deviceType = getDeviceType();
+    const isMobileDevice = deviceType === 'mobile' || deviceType === 'tablet';
+    
+    // Update device info
+    document.getElementById('device-info').textContent = `Device: ${deviceType} | Touch: ${('ontouchstart' in window)} | Screen: ${window.innerWidth}x${window.innerHeight}`;
+    
+    // Game variables
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const box = 18;
+    const rows = 20;
+    const cols = 20;
+    
+    // Set canvas size based on device
+    if (isMobileDevice) {
+      canvas.width = Math.min(350, window.innerWidth * 0.9);
+      canvas.height = canvas.width;
+      canvas.className = 'mobile-canvas';
+    } else {
+      canvas.width = 360;
+      canvas.height = 360;
+      canvas.className = 'desktop-canvas';
+    }
+    canvas.id = 'game-canvas';
+    
+    let snake = [{x: 9, y: 9}, {x: 8, y: 9}];
+    let direction = 'RIGHT';
+    let nextDirection = 'RIGHT';
+    let score = 0;
+    let gameOver = false;
+    
+    const speedMap = { 1: 260, 2: 180, 3: 120 };
+    const speedKeys = { '1': 1, '2': 2, '3': 3 };
+    let speed = 2;
+    
+    let interval = null;
+    let gameTime = 120;
+    let gameStartTime = Date.now();
+    
+    // Employee management
+    let employees = [];
+    let totalEmployees = 0;
+    let exitedEmployees = 0;
+    let retainedEmployees = 0;
+    let hrExperienceLevel = 0;
+    let powerup = null;
+    let supernovaMode = false;
+    let supernovaEndTime = 0;
+    let powerupSpawnTime = 0;
+    let nextEmployeeToTurnRed = 0;
+    let lastRedEmployeeTime = 0;
+    let wasSupernovaActive = false;
+    let previousHRTitle = "HR Intern";
+    
+    let availableBenefits = [
+      'Insurance', 'Onboarding', 'Feedback', 'Recognition', 'Training', 'Flexibility', 'Engagement', 'Culture Book', 'Timely Payroll',
+      'Offsite', 'Growth Plan', 'Inclusivity', 'Mentorship', 'Appraisal', 'Doctor',
+      'Therapist', 'Health Checkup', 'Gym Subscription', 'OPD'
+    ];
+    let usedBenefits = [];
+    let currentBenefit = 'Insurance';
+    let flashActive = false;
+    
+    // Create layout based on device type
+    function createLayout() {
+      const container = document.getElementById('game-container');
+      
+      if (isMobileDevice) {
+        // Mobile Layout
+        container.className = 'mobile-game-container';
+        container.innerHTML = `
+          <div class="mobile-instructions">
+            <div id="instructions">
+              🚀 <strong>Ready to become a CHRO?</strong><br>
+              🎁 Grab powers<br>
+              💪 Enter Supernova mode<br>
+              🦸🏻‍♂️ Retain at-risk employees<br>
+              ⏰ 2-minute challenge to minimize attrition<br>
+              📱 Use touch controls below
+            </div>
+          </div>
+          <div class="game-area">
+            <div id="score">Time: 2:00</div>
+            <div id="speed-controls">
+              <label for="speed">Speed:</label>
+              <select id="speed">
+                <option value="1">Low</option>
+                <option value="2" selected>Medium</option>
+                <option value="3">High</option>
+              </select>
+            </div>
+          </div>
+          <div class="touch-controls" id="touch-controls">
+            <div class="touch-btn up" data-direction="UP">↑</div>
+            <div class="touch-btn left" data-direction="LEFT">←</div>
+            <div class="touch-btn right" data-direction="RIGHT">→</div>
+            <div class="touch-btn down" data-direction="DOWN">↓</div>
+          </div>
+          <div class="mobile-metrics">
+            <div class="mobile-metric">
+              <div class="mobile-metric-value" id="hr-experience">HR Level: 0 (HR Intern)</div>
+            </div>
+            <div class="mobile-metric">
+              <div class="mobile-metric-value mobile-attrition" id="attrition">Attrition %: 0%</div>
+            </div>
+            <div class="mobile-metric">
+              <div class="mobile-metric-value" id="total-employees">Total Employees: 0</div>
+            </div>
+            <div class="mobile-metric">
+              <div class="mobile-metric-value" id="exited-employees">Exited Employees: 0</div>
+            </div>
+            <div class="mobile-metric">
+              <div class="mobile-metric-value" id="present-headcount">Present Headcount: 0</div>
+            </div>
+          </div>
+        `;
+      } else {
+        // Desktop Layout
+        container.className = 'desktop-game-container';
+        container.innerHTML = `
+          <div class="instructions-panel">
+            <div id="instructions">
+              🚀 <strong>Ready to become a CHRO?</strong><br>
+              🎁 Grab powers<br>
+              💪 Enter Supernova mode<br>
+              🦸🏻‍♂️ Retain at-risk employees<br>
+              ⏰ 2-minute challenge to minimize attrition<br>
+              ⚡ Adjust speed with 1-3 keys<br>
+              🔄 Press Spacebar for a fresh start
+            </div>
+          </div>
+          <div class="game-area">
+            <div id="score">Time: 2:00</div>
+            <div id="speed-controls">
+              <label for="speed">Speed:</label>
+              <select id="speed">
+                <option value="1">Low</option>
+                <option value="2" selected>Medium</option>
+                <option value="3">High</option>
+              </select>
+            </div>
+          </div>
+          <div class="metrics-panel">
+            <div class="metric">
+              <div class="metric-value" id="hr-experience">HR Level: 0 (HR Intern)</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value attrition" id="attrition">Attrition %: 0%</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" id="total-employees">Total Employees: 0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" id="exited-employees">Exited Employees: 0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" id="present-headcount">Present Headcount: 0</div>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Insert canvas into game area
+      const gameArea = document.querySelector('.game-area');
+      gameArea.appendChild(canvas);
+    }
+    
+    // Setup touch controls
+    function setupTouchControls() {
+      if (isMobileDevice) {
+        const touchControls = document.getElementById('touch-controls');
+        if (touchControls) {
+          touchControls.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const target = e.target.closest('.touch-btn');
+            if (target && !gameOver) {
+              const newDirection = target.dataset.direction;
+              if (newDirection && newDirection !== getOppositeDirection(direction)) {
+                nextDirection = newDirection;
+              }
+            }
+          });
+          
+          touchControls.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = e.target.closest('.touch-btn');
+            if (target && !gameOver) {
+              const newDirection = target.dataset.direction;
+              if (newDirection && newDirection !== getOppositeDirection(direction)) {
+                nextDirection = newDirection;
+              }
+            }
+          });
+        }
+      }
+    }
+    
+    function getOppositeDirection(dir) {
+      const opposites = { 'LEFT': 'RIGHT', 'RIGHT': 'LEFT', 'UP': 'DOWN', 'DOWN': 'UP' };
+      return opposites[dir];
+    }
+    
+    // Game functions (keeping existing logic)
+    function randomPosition() {
+      return {
+        x: Math.floor(Math.random() * (cols - 2)) + 1,
+        y: Math.floor(Math.random() * (rows - 2)) + 1
+      };
+    }
+    
+    function randomDirection() {
+      const directions = ['UP', 'DOWN', 'LEFT', 'RIGHT'];
+      return directions[Math.floor(Math.random() * directions.length)];
+    }
+    
+    function spawnEmployee() {
+      const pos = randomPosition();
+      const employee = {
+        x: pos.x, y: pos.y, direction: randomDirection(), color: 'blue',
+        gender: Math.random() < 0.5 ? 'female' : 'male', atRiskTime: 10000,
+        atRisk: false, atRiskStartTime: 0, exited: false, moveCounter: 0, permanentlySaved: false
+      };
+      employees.push(employee);
+      totalEmployees++;
+      updateMetrics();
+    }
+    
+    function getRandomBenefit() {
+      if (usedBenefits.length >= availableBenefits.length) usedBenefits = [];
+      const remainingBenefits = availableBenefits.filter(benefit => !usedBenefits.includes(benefit));
+      const randomBenefit = remainingBenefits[Math.floor(Math.random() * remainingBenefits.length)];
+      usedBenefits.push(randomBenefit);
+      return randomBenefit;
+    }
+    
+    function spawnPowerup() {
+      if (powerup) return;
+      const pos = randomPosition();
+      currentBenefit = getRandomBenefit();
+      powerup = { x: pos.x, y: pos.y, spawnTime: Date.now(), benefit: currentBenefit };
+    }
+    
+    function updateMetrics() {
+      const presentHeadcount = employees.filter(e => !e.exited).length;
+      const attritionPercent = totalEmployees > 0 ? ((exitedEmployees / totalEmployees) * 100).toFixed(1) : 0;
+      
+      document.getElementById('attrition').textContent = `Attrition %: ${attritionPercent}%`;
+      document.getElementById('total-employees').textContent = `Total Employees: ${totalEmployees}`;
+      document.getElementById('exited-employees').textContent = `Exited Employees: ${exitedEmployees}`;
+      document.getElementById('present-headcount').textContent = `Present Headcount: ${presentHeadcount}`;
+    }
+    
+    function createSupernovaFlash() {
+      if (flashActive) return;
+      flashActive = true;
+      const flash = document.createElement('div');
+      flash.className = 'supernova-flash';
+      flash.textContent = 'SUPERNOVA!';
+      document.body.appendChild(flash);
+      setTimeout(() => {
+        if (flash.parentNode) flash.parentNode.removeChild(flash);
+        flashActive = false;
+      }, 1000);
+    }
+    
+    function createPromotionFlash(title) {
+      if (flashActive) return;
+      flashActive = true;
+      const flash = document.createElement('div');
+      flash.className = 'promotion-flash';
+      flash.textContent = `${title}!`;
+      document.body.appendChild(flash);
+      setTimeout(() => {
+        if (flash.parentNode) flash.parentNode.removeChild(flash);
+        flashActive = false;
+      }, 1000);
+    }
+    
+    function getHRTitle(level) {
+      if (level >= 26) return "CHRO";
+      if (level >= 20) return "Head HR";
+      if (level >= 16) return "HR Lead";
+      if (level >= 11) return "HR Manager";
+      if (level >= 6) return "HR Associate";
+      return "HR Intern";
+    }
+    
+    function updateHRExperience() {
+      const title = getHRTitle(hrExperienceLevel);
+      document.getElementById('hr-experience').textContent = `HR Level: ${hrExperienceLevel} (${title})`;
+      if (title !== previousHRTitle) {
+        createPromotionFlash(title);
+        previousHRTitle = title;
+      }
+    }
+    
+    // Drawing functions (adapted for responsive canvas)
+    function draw3DSegment(x, y, isHead) {
+      ctx.save();
+      const scaleFactor = canvas.width / 360; // Scale based on canvas size
+      const scaledBox = box * scaleFactor;
+      
+      const xPos = x * scaledBox;
+      const yPos = y * scaledBox;
+      const size = scaledBox - 2;
+      
+      const gradient = ctx.createLinearGradient(xPos, yPos, xPos + size, yPos + size);
+      if (supernovaMode) {
+        gradient.addColorStop(0, '#fbbf24');
+        gradient.addColorStop(0.5, '#f59e0b');
+        gradient.addColorStop(1, '#d97706');
+      } else if (isHead) {
+        gradient.addColorStop(0, '#8b5cf6');
+        gradient.addColorStop(0.5, '#7c3aed');
+        gradient.addColorStop(1, '#6d28d9');
+      } else {
+        gradient.addColorStop(0, '#a78bfa');
+        gradient.addColorStop(0.5, '#8b5cf6');
+        gradient.addColorStop(1, '#7c3aed');
+      }
+      
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 6 * scaleFactor;
+      ctx.shadowOffsetX = 2 * scaleFactor;
+      ctx.shadowOffsetY = 2 * scaleFactor;
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(xPos, yPos, size, size);
+      
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      ctx.beginPath();
+      ctx.arc(xPos + size/3, yPos + size/3, size/6, 0, 2 * Math.PI);
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.fill();
+      
+      ctx.strokeStyle = supernovaMode ? '#d97706' : (isHead ? '#4c1d95' : '#5b21b6');
+      ctx.lineWidth = 1;
+      ctx.strokeRect(xPos, yPos, size, size);
+      ctx.restore();
+    }
+    
+    function draw3DEye(x, y, dir) {
+      ctx.save();
+      const scaleFactor = canvas.width / 360;
+      const scaledBox = box * scaleFactor;
+      
+      const cx = x * scaledBox + scaledBox / 2;
+      const cy = y * scaledBox + scaledBox / 2;
+      let ex = 0, ey = 0;
+      
+      if (dir === 'LEFT') { ex = -4 * scaleFactor; ey = 0; }
+      if (dir === 'RIGHT') { ex = 4 * scaleFactor; ey = 0; }
+      if (dir === 'UP') { ex = 0; ey = -4 * scaleFactor; }
+      if (dir === 'DOWN') { ex = 0; ey = 4 * scaleFactor; }
+      
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowBlur = 2 * scaleFactor;
+      ctx.shadowOffsetX = 1 * scaleFactor;
+      ctx.shadowOffsetY = 1 * scaleFactor;
+      
+      ctx.beginPath();
+      ctx.arc(cx + ex, cy + ey, 3 * scaleFactor, 0, 2 * Math.PI);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.arc(cx + ex, cy + ey, 1.5 * scaleFactor, 0, 2 * Math.PI);
+      ctx.fillStyle = '#000';
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.arc(cx + ex - 0.5 * scaleFactor, cy + ey - 0.5 * scaleFactor, 0.8 * scaleFactor, 0, 2 * Math.PI);
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.fill();
+      ctx.restore();
+    }
+    
+    function drawEmployee(x, y, color, gender = 'male') {
+      ctx.save();
+      const scaleFactor = canvas.width / 360;
+      const scaledBox = box * scaleFactor;
+      
+      const xPos = x * scaledBox + scaledBox / 2;
+      const yPos = y * scaledBox + scaledBox / 2;
+      
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 4 * scaleFactor;
+      ctx.shadowOffsetX = 2 * scaleFactor;
+      ctx.shadowOffsetY = 2 * scaleFactor;
+      
+      ctx.font = `${(scaledBox - 2)}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      let emoji;
+      if (color === 'red') {
+        emoji = gender === 'female' ? '🦸🏻‍♀️' : '🦸🏻‍♂️';
+      } else {
+        emoji = gender === 'female' ? '🙎🏻‍♀️' : '🙎🏻‍♂️';
+      }
+      
+      ctx.fillText(emoji, xPos, yPos + 1);
+      ctx.restore();
+    }
+    
+    function drawPowerup(x, y) {
+      ctx.save();
+      const scaleFactor = canvas.width / 360;
+      const scaledBox = box * scaleFactor;
+      
+      const xPos = x * scaledBox + scaledBox / 2;
+      const yPos = y * scaledBox + scaledBox / 2;
+      
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 4 * scaleFactor;
+      ctx.shadowOffsetX = 2 * scaleFactor;
+      ctx.shadowOffsetY = 2 * scaleFactor;
+      
+      ctx.font = `${(scaledBox - 2)}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🎁', xPos, yPos + 1);
+      
+      ctx.font = `${8 * scaleFactor}px Arial`;
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(powerup.benefit, xPos, yPos + scaledBox/2 + 2);
+      ctx.restore();
+    }
+    
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      snake.forEach((s, i) => {
+        draw3DSegment(s.x, s.y, i === 0);
+        if (i === 0) draw3DEye(s.x, s.y, direction);
+      });
+      
+      employees.forEach(employee => {
+        if (!employee.exited) {
+          drawEmployee(employee.x, employee.y, employee.color, employee.gender);
+        }
+      });
+      
+      if (powerup) {
+        drawPowerup(powerup.x, powerup.y);
+      }
+    }
+    
+    // Rest of game logic (keeping existing functions)
+    function moveEmployees() {
+      const currentTime = Date.now();
+      const activeEmployees = employees.filter(e => !e.exited && !e.permanentlySaved);
+      const redEmployees = employees.filter(e => e.atRisk && !e.exited);
+      
+      if (redEmployees.length === 0 && activeEmployees.length > 0) {
+        const timeSinceLastRed = currentTime - lastRedEmployeeTime;
+        if (timeSinceLastRed >= 10000) {
+          if (nextEmployeeToTurnRed >= activeEmployees.length) nextEmployeeToTurnRed = 0;
+          const employeeToTurnRed = activeEmployees[nextEmployeeToTurnRed];
+          if (employeeToTurnRed && !employeeToTurnRed.atRisk) {
+            employeeToTurnRed.atRisk = true;
+            employeeToTurnRed.color = 'red';
+            employeeToTurnRed.direction = randomDirection();
+            employeeToTurnRed.atRiskStartTime = currentTime;
+            lastRedEmployeeTime = currentTime;
+            nextEmployeeToTurnRed++;
+          }
+        }
+      }
+      
+      employees.forEach(employee => {
+        if (employee.exited) return;
+        employee.moveCounter++;
+        const moveThreshold = 3;
+        if (employee.moveCounter < moveThreshold) return;
+        employee.moveCounter = 0;
+        
+        if (employee.atRisk) {
+          const timeSinceAtRisk = currentTime - employee.atRiskStartTime;
+          if (timeSinceAtRisk < 10000) {
+            if (Math.random() < 0.1) employee.direction = randomDirection();
+            let newX = employee.x, newY = employee.y;
+            if (employee.direction === 'LEFT') newX--;
+            if (employee.direction === 'RIGHT') newX++;
+            if (employee.direction === 'UP') newY--;
+            if (employee.direction === 'DOWN') newY++;
+            
+            if (newX < 0) { newX = 0; employee.direction = 'RIGHT'; }
+            if (newX >= cols) { newX = cols - 1; employee.direction = 'LEFT'; }
+            if (newY < 0) { newY = 0; employee.direction = 'DOWN'; }
+            if (newY >= rows) { newY = rows - 1; employee.direction = 'UP'; }
+            
+            employee.x = newX;
+            employee.y = newY;
+          } else {
+            employee.x++;
+            if (employee.x >= cols) {
+              employee.exited = true;
+              exitedEmployees++;
+              updateMetrics();
+              spawnEmployee();
+            }
+          }
+        } else {
+          if (Math.random() < 0.1) employee.direction = randomDirection();
+          let newX = employee.x, newY = employee.y;
+          if (employee.direction === 'LEFT') newX--;
+          if (employee.direction === 'RIGHT') newX++;
+          if (employee.direction === 'UP') newY--;
+          if (employee.direction === 'DOWN') newY++;
+          
+          if (newX < 0) { newX = 0; employee.direction = 'RIGHT'; }
+          if (newX >= cols) { newX = cols - 1; employee.direction = 'LEFT'; }
+          if (newY < 0) { newY = 0; employee.direction = 'DOWN'; }
+          if (newY >= rows) { newY = rows - 1; employee.direction = 'UP'; }
+          
+          employee.x = newX;
+          employee.y = newY;
+        }
+      });
+    }
+    
+    function checkCollisions() {
+      const head = snake[0];
+      
+      if (powerup && head.x === powerup.x && head.y === powerup.y) {
+        supernovaMode = true;
+        supernovaEndTime = Date.now() + 5000;
+        powerup = null;
+        
+        if (!wasSupernovaActive) createSupernovaFlash();
+        wasSupernovaActive = true;
+        
+        const tail = snake[snake.length - 1];
+        snake.push({...tail});
+        
+        hrExperienceLevel++;
+        updateHRExperience();
+      }
+      
+      employees.forEach(employee => {
+        if (employee.exited) return;
+        if (head.x === employee.x && head.y === employee.y) {
+          if (supernovaMode && employee.atRisk) {
+            employee.atRisk = false;
+            employee.color = 'blue';
+            employee.direction = randomDirection();
+            employee.atRiskStartTime = 0;
+            employee.permanentlySaved = true;
+            score += 10;
+            retainedEmployees++;
+            updateMetrics();
+            
+            const activeEmployees = employees.filter(e => !e.exited && !e.permanentlySaved);
+            nextEmployeeToTurnRed = 0;
+            spawnEmployee();
+          }
+        }
+      });
+    }
+    
+    function moveSnake() {
+      let head = { ...snake[0] };
+      direction = nextDirection;
+      if (direction === 'LEFT') head.x--;
+      if (direction === 'RIGHT') head.x++;
+      if (direction === 'UP') head.y--;
+      if (direction === 'DOWN') head.y++;
+      
+      if (head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows) {
+        endGame();
+        return;
+      }
+      
+      if (snake.some(s => s.x === head.x && s.y === head.y)) {
+        endGame();
+        return;
+      }
+      
+      snake.unshift(head);
+      snake.pop();
+    }
+    
+    function endGame() {
+      gameOver = true;
+      const attritionPercent = totalEmployees > 0 ? ((exitedEmployees / totalEmployees) * 100).toFixed(1) : 0;
+      const currentTitle = getHRTitle(hrExperienceLevel);
+      const gameOverMessage = `You reached ${currentTitle} level with employee attrition at ${attritionPercent}%.<br>Game Over! ${isMobileDevice ? 'Tap to restart.' : 'Press Spacebar to restart.'}`;
+      
+      document.getElementById('game-over-message').innerHTML = gameOverMessage;
+      document.getElementById('game-over-message').style.display = 'block';
+      clearInterval(interval);
+    }
+    
+    function updateGameTime() {
+      const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+      const remaining = Math.max(0, gameTime - elapsed);
+      const minutes = Math.floor(remaining / 60);
+      const seconds = remaining % 60;
+      document.getElementById('score').textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      
+      if (remaining <= 0) endGame();
+    }
+    
+    function updateSupernova() {
+      if (supernovaMode && Date.now() > supernovaEndTime) {
+        supernovaMode = false;
+        wasSupernovaActive = false;
+      }
+    }
+    
+    function updatePowerup() {
+      const currentTime = Date.now();
+      if (powerup && currentTime - powerup.spawnTime > 10000) powerup = null;
+      if (!powerup) {
+        spawnPowerup();
+        powerupSpawnTime = currentTime;
+      }
+    }
+    
+    function gameLoop() {
+      if (!gameOver) {
+        moveSnake();
+        moveEmployees();
+        checkCollisions();
+        updateGameTime();
+        updateSupernova();
+        updatePowerup();
+        draw();
+        
+        if (Math.random() < 0.005 && employees.length < 5) spawnEmployee();
+      }
+    }
+    
+    function startGameLoop() {
+      if (interval) clearInterval(interval);
+      const baseSpeed = speedMap[speed];
+      const snakeLength = snake.length;
+      const speedMultiplier = Math.min(1.5, 1 + (snakeLength - 1) * 0.1);
+      const adjustedSpeed = Math.max(60, baseSpeed / speedMultiplier);
+      interval = setInterval(gameLoop, adjustedSpeed);
+    }
+    
+    // Event Listeners
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        document.getElementById('game-over-message').style.display = 'none';
+        location.reload();
+        return;
+      }
+      
+      if (gameOver) return;
+      if (e.key === 'ArrowLeft' && direction !== 'RIGHT') nextDirection = 'LEFT';
+      if (e.key === 'ArrowUp' && direction !== 'DOWN') nextDirection = 'UP';
+      if (e.key === 'ArrowRight' && direction !== 'LEFT') nextDirection = 'RIGHT';
+      if (e.key === 'ArrowDown' && direction !== 'UP') nextDirection = 'DOWN';
+      if (speedKeys[e.key]) {
+        speed = speedKeys[e.key];
+        document.getElementById('speed').value = speed;
+        startGameLoop();
+      }
+    });
+    
+    // Touch restart for mobile
+    document.getElementById('game-over-message').addEventListener('click', () => {
+      if (isMobileDevice && gameOver) {
+        document.getElementById('game-over-message').style.display = 'none';
+        location.reload();
+      }
+    });
+    
+    // Speed control
+    document.addEventListener('change', (e) => {
+      if (e.target.id === 'speed') {
+        speed = e.target.value;
+        startGameLoop();
+      }
+    });
+    
+    // Initialize
+    createLayout();
+    setupTouchControls();
+    
+    for (let i = 0; i < 3; i++) spawnEmployee();
+    lastRedEmployeeTime = Date.now();
+    draw();
+    startGameLoop();
+  </script>
+</body>
+</html> 
