@@ -1,4 +1,4 @@
-# Snake Game - Nova Benefits (Mobile)
+# Snake Game - Nova Benefits
 
 A fun HR-themed Snake game where you advance from HR Intern to CHRO while minimizing employee attrition!
 
